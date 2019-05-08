@@ -1,1 +1,127 @@
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
+/*hadoop package*/
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.IOUtils;
+
+public class HdfsFileTest{
+	//创建新文件
+	public static void createFile(String dst,byte[] contents) throws IOException{
+		Configuration conf = new Configuration();
+		conf.set("fs.defaultFS","hdfs://localhost:9000");
+		FileSystem fs = FileSystem.get(conf);
+		Path dstPath = new Path(dst);//创建文件路径
+		//打开输入流
+		FSDataOutputStream outputStream = fs.create(dstPath);
+		outputStream.write(contents);
+		outputStream.close();
+		fs.close();
+		System.out.println("File Create OK!");
+	}
+	
+	//上传本地文件
+	public static void uploadFile(String src,String dst)thows IOException{
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		Path srcPath = new Path(src);
+		Path dstPath = new Path(dst);
+		//第一个参数是指是否删除原文件，true为删除，默认为false
+		fs.copyFromLocalFile(false,srcPath,dstPath);
+		
+		//打印文件路径
+		System.out.println("Upload to " + conf.get("fs.default.name"));
+		System.out.println("--------------------list files------------------------\n");
+		FileStatus[] fileStatus = fs.listStatus(dstPath);
+		for(FileStatus file : fileStatus){
+			System.out.println(file.getPath());
+		}
+		fs.close();
+	}
+	
+	//文件重命名
+	public static void renameFile(String oldName, String newName) throws IOException{
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		Path oldPath = new Path(oldName);
+		Path newPath = new Path(newName);
+		boolean isok = fs.rename(oldPath,newPath);
+		if(isok){
+			System.out.println("rename file ok!");
+		}else{
+			System.out.println("rename file err!");
+		}
+		fs.close();
+	}
+	
+	//删除文件
+	public static void deleteFile(String filePath) throws IOException{
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		Path path = new Path(filePath);
+		boolean isok = fs.deleteOnExit(path);
+		if(isok){
+			System.out.println("delete file ok!");
+		}else{
+			System.out.println("delete file err!");
+		}
+		fs.close();
+	}
+	
+	//创建新目录
+	public static void mkdir(String path) throws IOException{
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		Path srcPath = new Path(path);
+		boolean isok = fs.mkdir(srcPath);
+		if(isok){
+			System.out.println("mkdir ok!");
+		}else{
+			System.out.println("mkdir err!");
+		}
+		fs.close();
+	}
+	
+	//读取文件内容
+	public static void readFile(String filePath) throws IOException{
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		Path srcPath = new Path(filePath);
+		InputStream in = NULL;
+		try{
+			in = fs.open(srcPath);
+			IOUtils.copyBytes(in,System.out,4096,false);
+		}finally{
+			IOUtils.closeStream(in);
+		
+		}
+		
+		fs.close();
+	}
+	
+	
+	public static void main(String[] args) throws IOException {
+    	// 测试上传文件
+		uploadFile("D:\\c.txt", "/input");
+		// 测试创建文件
+		
+		byte[] contents = "hello world 世界你好\n".getBytes();
+		createFile("/input/d.txt",contents);
+		 
+		// 测试重命名
+		// rename("/user/hadoop/test/d.txt", "/user/hadoop/test/dd.txt");
+		// 测试删除文件
+		// delete("test/dd.txt"); //使用相对路径
+		// delete("test1"); //删除目录
+		// 测试新建目录
+		// mkdir("test1");
+		// 测试读取文件
+		readFile("/input/d.txt");
+    }
+
+}
