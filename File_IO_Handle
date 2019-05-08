@@ -1,3 +1,14 @@
+/*
+Configuration : 提供Hadoop参数配置的访问
+BufferedFSInputStream : 通过缓冲优化读取FSInputStream的类
+FileSystem : 一个非常通用的文件系统抽象基类
+FileStatus : 封装了文件系统中文件或者目录的元数据信息，包括文件长度、块大小、副本、修改时间、所有者以及许可信息
+FileUtil : 文件处理的通用方法类
+FilterFileSystem : 包含其他文件系统的类，可以作为一个基本的文件系统使用，通常提供一些额外的文件操作功能。
+FSDataInputStream : HDFS 文件输入流，继承了DataInputStream
+FSDataOutputStream : HDFS 文件输出流，继承了DataOutputStream
+IOUtils : 封装了所有与输入输出相关的通用函数类，包括读写删除数据复制等
+*/
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
